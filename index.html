@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Studio Code - Web</title>
+    <!-- VS Code UI 图标 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@vscode/codicons/dist/codicon.css">
+    <!-- 文件图标 (Font Awesome) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 1. 顶部菜单栏 -->
+    <header class="title-bar">
+        <div class="icon-vscode codicon codicon-vscode"></div>
+        <ul class="menubar" id="menubar">
+            <li class="menu-item" tabindex="0">文件(F)
+                <ul class="dropdown">
+                    <li id="menu-new-file"><span class="label">新建文件</span><span class="key">Ctrl+N</span></li>
+                    <li id="menu-new-folder"><span class="label">新建文件夹</span><span class="key"></span></li>
+                    <li class="separator"></li>
+                    <li id="menu-save"><span class="label">保存</span><span class="key">Ctrl+S</span></li>
+                    <li id="menu-autosave"><span class="label"><i class="codicon codicon-check"></i> 自动保存</span></li>
+                </ul>
+            </li>
+            <li class="menu-item" tabindex="0">编辑(E)
+                <ul class="dropdown">
+                    <li id="menu-undo"><span class="label">撤销</span><span class="key">Ctrl+Z</span></li>
+                    <li id="menu-redo"><span class="label">恢复</span><span class="key">Ctrl+Y</span></li>
+                    <li class="separator"></li>
+                    <li id="menu-copy"><span class="label">复制</span><span class="key">Ctrl+C</span></li>
+                    <li id="menu-paste"><span class="label">粘贴</span><span class="key">Ctrl+V</span></li>
+                </ul>
+            </li>
+            <li class="menu-item" tabindex="0">查看(V)
+                <ul class="dropdown">
+                    <li id="menu-explorer"><span class="label">资源管理器</span><span class="key">Ctrl+Shift+E</span></li>
+                    <li id="menu-search"><span class="label">搜索</span><span class="key">Ctrl+Shift+F</span></li>
+                    <li class="separator"></li>
+                    <li id="menu-toggle-sidebar"><span class="label">切换侧边栏</span><span class="key">Ctrl+B</span></li>
+                </ul>
+            </li>
+            <li class="menu-item" tabindex="0">运行(R)
+                <ul class="dropdown">
+                    <li id="menu-run"><span class="label">启动调试</span><span class="key">F5</span></li>
+                </ul>
+            </li>
+            <li class="menu-item" tabindex="0">帮助(H)
+                <ul class="dropdown">
+                    <li id="menu-about"><span class="label">关于</span></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="title-label" id="workspace-title">Welcome - Visual Studio Code</div>
+        <div class="window-controls">
+            <div class="codicon codicon-chrome-minimize"></div>
+            <div class="codicon codicon-chrome-restore"></div>
+            <div class="codicon codicon-chrome-close"></div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- 2. 活动栏 -->
+        <aside class="activity-bar">
+            <div class="action-container">
+                <div class="action-item active" data-target="explorer" title="资源管理器 (Ctrl+Shift+E)">
+                    <div class="codicon codicon-files"></div>
+                </div>
+                <div class="action-item" data-target="search" title="搜索">
+                    <div class="codicon codicon-search"></div>
+                </div>
+                <div class="action-item" data-target="extensions" title="扩展">
+                    <div class="codicon codicon-extensions"></div>
+                </div>
+            </div>
+            <div class="action-container bottom">
+                <div class="action-item" id="btn-settings" title="管理">
+                    <div class="codicon codicon-settings-gear"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 3. 侧边栏 -->
+        <aside class="sidebar" id="sidebar">
+            <!-- Explorer View -->
+            <div id="view-explorer" class="sidebar-view active">
+                <div class="sidebar-header">
+                    <span class="sidebar-title">资源管理器</span>
+                    <div class="sidebar-actions">
+                        <div id="btn-new-file" class="action-btn codicon codicon-new-file" title="新建文件"></div>
+                        <div id="btn-new-folder" class="action-btn codicon codicon-new-folder" title="新建文件夹"></div>
+                        <div id="btn-refresh" class="action-btn codicon codicon-refresh" title="刷新"></div>
+                        <div id="btn-collapse" class="action-btn codicon codicon-collapse-all" title="折叠所有"></div>
+                    </div>
+                </div>
+                <div class="explorer-section-header">
+                    <span class="codicon codicon-chevron-down"></span>
+                    <span style="font-weight: bold; margin-left: 5px;">WORKSPACE</span>
+                </div>
+                <div class="sidebar-content" id="explorer-content"></div>
+            </div>
+
+            <!-- Search View -->
+            <div id="view-search" class="sidebar-view">
+                <div class="sidebar-header"><span class="sidebar-title">搜索</span></div>
+                <div class="padding-box">
+                    <div class="input-box">
+                        <input type="text" id="search-input" placeholder="搜索">
+                    </div>
+                    <div class="search-results" id="search-results"></div>
+                </div>
+            </div>
+
+            <!-- Extensions View -->
+            <div id="view-extensions" class="sidebar-view">
+                <div class="sidebar-header"><span class="sidebar-title">扩展</span></div>
+                <div class="padding-box">
+                    <div class="input-box"><input type="text" placeholder="搜索扩展"></div>
+                    <div class="extension-list">
+                        <div class="ext-item">
+                            <i class="fab fa-python" style="color:#3776ab; font-size:24px;"></i>
+                            <div class="ext-info">
+                                <div class="ext-name">Python</div>
+                                <div class="ext-desc">IntelliSense...</div>
+                            </div>
+                            <button class="btn-install">安装</button>
+                        </div>
+                        <div class="ext-item">
+                            <i class="fab fa-js" style="color:#f1e05a; font-size:24px;"></i>
+                            <div class="ext-info">
+                                <div class="ext-name">ESLint</div>
+                                <div class="ext-desc">Linting utility...</div>
+                            </div>
+                            <button class="btn-install">安装</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 4. 编辑器区域 -->
+        <main class="editor-area">
+            <!-- 标签页与工具栏 -->
+            <div class="editor-group-header">
+                <div class="tabs-container" id="tabs-container"></div>
+                <div class="editor-actions">
+                    <div class="action-btn" id="btn-run-toolbar" title="运行 (F5)">
+                        <span class="codicon codicon-play" style="color: #89d185;"></span>
+                    </div>
+                    <div class="action-btn" title="拆分编辑器">
+                        <span class="codicon codicon-split-horizontal"></span>
+                    </div>
+                    <div class="action-btn"><span class="codicon codicon-kebab-vertical"></span></div>
+                </div>
+            </div>
+
+            <!-- 面包屑 -->
+            <div class="breadcrumbs-bar">
+                <div class="breadcrumbs" id="breadcrumbs"></div>
+            </div>
+
+            <!-- 代码编辑核心区 -->
+            <div class="code-container">
+                <!-- 行号层 -->
+                <div class="line-numbers" id="line-numbers"></div>
+                
+                <!-- 编辑器层 -->
+                <div class="code-wrapper">
+                    <!-- 语法高亮 (底层) -->
+                    <pre class="highlight-layer" id="highlight-layer"></pre>
+                    <!-- 输入 (顶层透明) -->
+                    <textarea class="input-layer" id="input-layer" spellcheck="false" wrap="off"></textarea>
+                </div>
+                
+                <!-- 空状态 -->
+                <div class="empty-state" id="empty-state">
+                    <div class="watermark-icon codicon codicon-vscode"></div>
+                    <div class="shortcuts">
+                        <div class="shortcut-row"><span class="desc">新建文件</span><span class="keys">Ctrl+N</span></div>
+                        <div class="shortcut-row"><span class="desc">打开文件...</span><span class="keys">Ctrl+O</span></div>
+                        <div class="shortcut-row"><span class="desc">命令面板...</span><span class="keys">Ctrl+Shift+P</span></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 状态栏 -->
+    <footer class="status-bar">
+        <div class="status-left">
+            <div class="status-item remote-host"><span class="codicon codicon-remote"></span></div>
+            <div class="status-item"><span class="codicon codicon-source-control"></span> main*</div>
+            <div class="status-item"><span class="codicon codicon-error"></span> 0</div>
+        </div>
+        <div class="status-right">
+            <div class="status-item" id="cursor-pos">Ln 1, Col 1</div>
+            <div class="status-item">UTF-8</div>
+            <div class="status-item" id="lang-mode">Plain Text</div>
+            <div class="status-item"><span class="codicon codicon-bell"></span></div>
+        </div>
+    </footer>
+
+    <!-- 右键菜单 -->
+    <div id="context-menu" class="context-menu">
+        <ul>
+            <li id="ctx-new-file">新建文件</li>
+            <li id="ctx-new-folder">新建文件夹</li>
+            <li class="separator"></li>
+            <li id="ctx-rename">重命名</li>
+            <li id="ctx-delete" class="danger">删除</li>
+        </ul>
+    </div>
+
+    <!-- 设置菜单 -->
+    <div id="settings-menu" class="context-menu">
+        <ul>
+            <li>设置</li>
+            <li>颜色主题</li>
+            <li>文件图标主题</li>
+            <li class="separator"></li>
+            <li>检查更新</li>
+        </ul>
+    </div>
+    <!-- 新增：关于弹窗结构 -->
+    <div id="about-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>关于 Visual Studio Code Web</span>
+                <span class="codicon codicon-close close-btn" id="close-about"></span>
+            </div>
+            <div class="modal-body">
+                <div class="about-logo">
+                    <div class="codicon codicon-vscode" style="font-size: 64px; color: #007acc;"></div>
+                </div>
+                <h2 style="margin-bottom: 5px;">VS Code Web Clone</h2>
+                <p class="meta-info">版本: 1.0.0</p>
+                <p class="meta-info">提交: main (latest)</p>
+                <p class="meta-info">开源地址: <a href="https://github.com/huayonghu/vscode-web-simulator" target="_blank">github.com/huayonghu/vscode-web-simulator</a></p>
+                
+                <div class="disclaimer-box">
+                    <strong>版权声明与免责条款：</strong><br>
+                    1. 本项目主要 UI 设计、图标 (Codicons) 及视觉风格版权归 <strong>Microsoft Visual Studio Code</strong> 所有。<br>
+                    2. 本项目仅供前端技术学习与交流使用，非 VS Code 官方产品。<br>
+                    3. 本项目完全开源免费，作者不对使用本项目产生的任何直接或间接后果负责。
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn-primary" id="btn-about-ok">确定</button>
+            </div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
